@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rosetta_language">Language</string>
+    <string name="rosetta_ok">Ok</string>
+    <string name="rosetta_cancel">Cancel</string>
+</resources>
