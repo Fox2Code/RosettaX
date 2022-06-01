@@ -213,8 +213,10 @@ final class LocalesUtils {
                 if (countryFallback != null && !countryFallback.equals(newLocale.getCountry())) {
                     localeList = new LocaleList(newLocale,
                             new Locale(language, countryFallback), Locale.US);
-                } else {
+                } else if (!Locale.US.equals(newLocale)) {
                     localeList = new LocaleList(newLocale, Locale.US);
+                } else {
+                    localeList = new LocaleList(Locale.US);
                 }
             }
             configuration.setLocales(localeList);
