@@ -35,6 +35,6 @@ repositories {
 
 
 dependencies {
-    implementation 'com.github.Fox2Code:RosettaX:1.0.1'
+    implementation 'com.github.Fox2Code:RosettaX:1.0.2'
 }
 ```

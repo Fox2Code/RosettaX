@@ -62,7 +62,17 @@ final class LocalesUtils {
             sLogger.debug("Translation \"" + translation + "\" doesn't exists on this system!");
         }
         try {
-            return R.string.class.getDeclaredField("rosetta_" + translation).getInt(null);
+            switch (translation) {
+                case "ok":
+                    return R.string.rosetta_ok;
+                case "cancel":
+                    return R.string.rosetta_cancel;
+                case "language":
+                    return R.string.rosetta_language;
+                default:
+                    return R.string.class.getDeclaredField(
+                            "rosetta_" + translation).getInt(null);
+            }
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to get: " + translation, e);
         }
