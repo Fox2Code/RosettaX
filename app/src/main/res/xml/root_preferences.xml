@@ -32,4 +32,8 @@
 
     </PreferenceCategory>
 
+    <Preference
+        app:key="language"
+        app:title="Language" />
+
 </PreferenceScreen>

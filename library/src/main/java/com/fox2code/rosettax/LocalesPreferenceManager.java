@@ -1,8 +1,14 @@
 package com.fox2code.rosettax;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
@@ -13,7 +19,7 @@ import java.util.Locale;
  *
  * Created by ahmedjazzar on 1/22/16.
  */
-class LocalesPreferenceManager  {
+final class LocalesPreferenceManager implements Application.ActivityLifecycleCallbacks {
     private final SharedPreferences mSharedPreferences;
     private final SharedPreferences.Editor mEditor;
 
@@ -153,4 +159,28 @@ class LocalesPreferenceManager  {
     private String getPreferredCountry(String key)  {
         return mSharedPreferences.getString(key, null);
     }
+
+    @Override
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+        LocalesUtils.setAppLocale(activity, this.getPreferredLocale(
+                LocalesPreferenceManager.USER_PREFERRED_LOCALE));
+    }
+
+    @Override
+    public void onActivityStarted(@NonNull Activity activity) {}
+
+    @Override
+    public void onActivityResumed(@NonNull Activity activity) {}
+
+    @Override
+    public void onActivityPaused(@NonNull Activity activity) {}
+
+    @Override
+    public void onActivityStopped(@NonNull Activity activity) {}
+
+    @Override
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {}
+
+    @Override
+    public void onActivityDestroyed(@NonNull Activity activity) {}
 }

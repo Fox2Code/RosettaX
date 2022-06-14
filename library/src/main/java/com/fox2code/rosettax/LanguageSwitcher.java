@@ -67,6 +67,8 @@ public class LanguageSwitcher {
         if (preferenceManager == null) {
             preferenceManager = new LocalesPreferenceManager(
                     this.mContext, firstLaunchLocale, baseLocale);
+            ((Application) this.mContext.getApplicationContext())
+                    .registerActivityLifecycleCallbacks(preferenceManager);
 
             // initializing Locales utils needed objects (detector, preferences)
             LocalesUtils.setDetector(new LocalesDetector(this.mContext));
