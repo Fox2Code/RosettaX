@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.Fox2Code'
-version = '1.0.4'
+version = '1.0.5'
 
 android {
     namespace 'com.fox2code.rosettax'
@@ -48,7 +48,7 @@ afterEvaluate {
                 from components.release
                 groupId = project.group
                 artifactId = 'RosettaX'
-                version = project.version
+                version = '1.0'
             }
         }
     }
