@@ -16,5 +16,9 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "RosettaX"
-include ':app'
+// JitPack fails building ":app", and doesn't need to.
+if (System.getenv("TRAVIS") == null &&
+        System.getenv("JITPACK") == null) {
+    include ':app'
+}
 include ':library'
