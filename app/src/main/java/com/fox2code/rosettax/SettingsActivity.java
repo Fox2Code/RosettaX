@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             });
             Locale locale = getActivity().getResources().getConfiguration().locale;
-            findPreference("language").setSummary(locale.getDisplayName(locale));
+            findPreference("language").setSummary(locale.getDisplayName(Locale.US));
         }
     }
 }

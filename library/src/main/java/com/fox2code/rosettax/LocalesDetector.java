@@ -142,6 +142,18 @@ class LocalesDetector {
             if (Arrays.asList(androidLocales).contains(locale)) {
                 cleanLocales.add(locale);
             } else {
+                // Workaround for chinese not being correctly detected
+                switch ("" + locale) {
+                    case "zh":
+                        cleanLocales.add(Locale.CHINESE);
+                        continue;
+                    case "zh_CH":
+                        cleanLocales.add(Locale.SIMPLIFIED_CHINESE);
+                        continue;
+                    case "zh_TW":
+                        cleanLocales.add(Locale.TRADITIONAL_CHINESE);
+                        continue;
+                }
                 mLogger.error("Invalid passed locale: " + locale);
                 mLogger.warn("Invalid specified locale: '" + locale + "', has been discarded");
             }

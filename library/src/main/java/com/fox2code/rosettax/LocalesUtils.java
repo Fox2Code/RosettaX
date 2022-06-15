@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.LocaleList;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -132,6 +133,7 @@ final class LocalesUtils {
 
         for (Locale loc : LocalesUtils.getLocales()) {
             String langDisplay = loc.getDisplayName(loc);
+            sLogger.debug(loc + ": " + langDisplay);
             stringLocales.add(langDisplay.substring(0, 1).toUpperCase() + langDisplay.substring(1).toLowerCase());
         }
         return stringLocales;
@@ -211,7 +213,7 @@ final class LocalesUtils {
             String language = newLocale.getLanguage();
             LocaleList localeList;
             if (language.equals("zh")) {
-                if (newLocale.getCountry().equals("zCN")) {
+                if (Locale.SIMPLIFIED_CHINESE.equals(newLocale)) {
                     localeList = new LocaleList(newLocale,
                             Locale.TRADITIONAL_CHINESE, Locale.US);
                 } else {
@@ -366,5 +368,16 @@ final class LocalesUtils {
      */
     private static Locale getCurrentLocale() {
         return sDetector.getCurrentLocale();
+    }
+
+    /**
+     * @param locale the locale string
+     * @return parsed local object
+     */
+    static Locale parseLocale(String locale) {
+        int i = locale.indexOf('-');
+        return i == -1 || i + 1 == locale.length() ? new Locale(locale) :
+                new Locale(locale.substring(0, i), locale.substring(
+                        i + (locale.charAt(i + 1) == 'r' ? 2 : 1)));
     }
 }

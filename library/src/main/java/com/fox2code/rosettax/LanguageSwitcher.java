@@ -103,9 +103,7 @@ public class LanguageSwitcher {
     public void setSupportedStringLocales(HashSet<String> sLocales)    {
         HashSet<Locale> locales = new HashSet<>();
         for (String sLocale: sLocales) {
-            int i = sLocale.indexOf('-');
-            locales.add(i == -1 ? new Locale(sLocale) : new Locale(
-                    sLocale.substring(0, i), sLocale.substring(i + 1)));
+            locales.add(LocalesUtils.parseLocale(sLocale));
         }
         this.setSupportedLocales(locales);
     }
