@@ -1,5 +1,6 @@
 package com.fox2code.rosettax;
 
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
@@ -34,10 +35,12 @@ public class SettingsActivity extends AppCompatActivity {
             final HashSet<String> supportedLocales = new HashSet<>();
             supportedLocales.add("cs");
             supportedLocales.add("de");
+            supportedLocales.add("el");
             supportedLocales.add("es-rMX");
             supportedLocales.add("et");
             supportedLocales.add("fr");
             supportedLocales.add("id");
+            supportedLocales.add("it");
             supportedLocales.add("ja");
             supportedLocales.add("nb-rNO");
             supportedLocales.add("pl");
@@ -51,13 +54,15 @@ public class SettingsActivity extends AppCompatActivity {
             supportedLocales.add("zh-rTW");
             supportedLocales.add("en");
             findPreference("language").setOnPreferenceClickListener(preference -> {
-                LanguageSwitcher ls = new LanguageSwitcher(getActivity());
+                LanguageSwitcher ls = new LanguageSwitcher(requireActivity());
                 ls.setSupportedStringLocales(supportedLocales);
-                ls.showChangeLanguageDialog(getActivity());
+                ls.showChangeLanguageDialog(requireActivity());
                 return true;
             });
-            Locale locale = getActivity().getResources().getConfiguration().locale;
+            Locale locale = requireActivity().getResources().getConfiguration().locale;
             findPreference("language").setSummary(locale.getDisplayName(Locale.US));
+            Location location = new Location("");
+            location.getProvider();
         }
     }
 }

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class LanguageInitializer implements Initializer<Boolean> {
+public final class LanguageInitializer implements Initializer<Boolean> {
     @NonNull
     @Override
     public Boolean create(@NonNull Context context) {

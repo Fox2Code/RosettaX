@@ -3,11 +3,18 @@ package com.fox2code.rosettax;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.ContextWrapper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.Preference;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 
 /**
@@ -20,7 +27,7 @@ import java.util.Locale;
  */
 public class LanguageSwitcher {
     private final Context mContext;
-    private final String TAG = LanguageSwitcher.class.getName();
+    private final String TAG = this.getClass().getSimpleName();
 
     /**
      * A constructor that accepts context and sets the base and first launch locales to en_US
@@ -84,14 +91,21 @@ public class LanguageSwitcher {
      * Responsible for displaying Change dialog fragment
      */
     public void showChangeLanguageDialog(FragmentActivity activity)  {
-        new LanguagesListDialogFragment()
-                .show(activity.getSupportFragmentManager(), TAG);
+        showChangeLanguageDialogImpl(activity, TAG);
+    }
+
+    /**
+     * Responsible for displaying Change dialog fragment
+     */
+    public static void showChangeLanguageDialogImpl(FragmentActivity activity, String tag)  {
+        new LanguagesListDialogFragment().show(activity.getSupportFragmentManager(), tag);
     }
 
     /**
      *
      * @return the application supported locales
      */
+    @NonNull
     public HashSet<Locale> getLocales()   {
         return LocalesUtils.getLocales();
     }
@@ -100,8 +114,16 @@ public class LanguageSwitcher {
      * Sets the app locales from a string Set
      * @param sLocales supported locales in a String form
      */
-    public void setSupportedStringLocales(HashSet<String> sLocales)    {
-        HashSet<Locale> locales = new HashSet<>();
+    public void setSupportedStringLocales(String... sLocales)    {
+        this.setSupportedStringLocales(Arrays.asList(sLocales));
+    }
+
+    /**
+     * Sets the app locales from a string Set
+     * @param sLocales supported locales in a String form
+     */
+    public void setSupportedStringLocales(Collection<String> sLocales)    {
+        LinkedHashSet<Locale> locales = new LinkedHashSet<>();
         for (String sLocale: sLocales) {
             locales.add(LocalesUtils.parseLocale(sLocale));
         }
@@ -112,7 +134,15 @@ public class LanguageSwitcher {
      * set supported locales from the given Set
      * @param locales supported locales
      */
-    public void setSupportedLocales(HashSet<Locale> locales)    {
+    public void setSupportedLocales(Locale... locales)    {
+        this.setSupportedLocales(Arrays.asList(locales));
+    }
+
+    /**
+     * set supported locales from the given Set
+     * @param locales supported locales
+     */
+    public void setSupportedLocales(Collection<Locale> locales)    {
         LocalesUtils.setSupportedLocales(locales);
     }
 
@@ -122,7 +152,7 @@ public class LanguageSwitcher {
      * @param stringId the string that this library gonna use to detect current app available
      *                 locales
      */
-    public void setSupportedLocales(int stringId)    {
+    public void setSupportedLocales(@StringRes int stringId)    {
         this.setSupportedLocales(this.fetchAvailableLocales(stringId));
     }
 
@@ -132,7 +162,7 @@ public class LanguageSwitcher {
      *                 locales
      * @return a set of detected application locales
      */
-    public HashSet<Locale> fetchAvailableLocales(int stringId) {
+    public HashSet<Locale> fetchAvailableLocales(@StringRes int stringId) {
         return LocalesUtils.fetchAvailableLocales(stringId);
     }
 
@@ -161,6 +191,7 @@ public class LanguageSwitcher {
     /**
      * @return the first launch locale
      */
+    @NonNull
     public Locale getLaunchLocale()  {
         return LocalesUtils.getLaunchLocale();
     }
@@ -168,6 +199,7 @@ public class LanguageSwitcher {
     /**
      * @return the current locale
      */
+    @NonNull
     public Locale getCurrentLocale()  {
         return LocalesUtils.getCurrentLocale(this.mContext);
     }
@@ -178,7 +210,7 @@ public class LanguageSwitcher {
      *
      * @return true if the operation succeed, false otherwise
      */
-    public boolean switchToLaunch(Activity activity)  {
+    public boolean switchToLaunch(@NonNull Activity activity)  {
         return setLocale(getLaunchLocale(), activity);
     }
 }

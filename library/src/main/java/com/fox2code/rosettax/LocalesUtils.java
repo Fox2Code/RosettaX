@@ -9,17 +9,20 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.LocaleList;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentActivity;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,7 +38,9 @@ final class LocalesUtils {
     @SuppressLint("StaticFieldLeak")
     private static LocalesDetector sDetector;
     private static LocalesPreferenceManager sLocalesPreferenceManager;
-    private static HashSet<Locale> sLocales;
+    private static LinkedHashSet<Locale> sLocales =
+            new LinkedHashSet<>(Collections.singleton(Locale.US));
+    private static Locale[] sLocalesArray;
     private static final HashMap<String, String> sCountryFallback = new HashMap<>();
     private static final Locale[] PSEUDO_LOCALES = {
             new Locale("en", "XA"),
@@ -106,15 +111,19 @@ final class LocalesUtils {
      * @param stringId a string to start discovering sLocales in
      * @return a HashSet of discovered sLocales
      */
-    static HashSet<Locale> fetchAvailableLocales(int stringId) {
+    static HashSet<Locale> fetchAvailableLocales(@StringRes int stringId) {
         return sDetector.fetchAvailableLocales(stringId);
     }
 
     /**
      * @param localesSet sLocales  user wanna use
      */
-    static void setSupportedLocales(HashSet<Locale> localesSet) {
+    static void setSupportedLocales(Collection<Locale> localesSet) {
+        if (LocalesUtils.sLocalesArray != null) {
+            sLogger.warn("Setting supported locales twice is not supported!");
+        }
         LocalesUtils.sLocales = sDetector.validateLocales(localesSet);
+        LocalesUtils.sLocalesArray = LocalesUtils.sLocales.toArray(new Locale[0]);
         sLogger.debug("Locales have been changed");
     }
 
@@ -145,19 +154,30 @@ final class LocalesUtils {
     static int getCurrentLocaleIndex() {
         Locale locale = LocalesUtils.getCurrentLocale();
         int index = -1;
+        int indexSec = -1;
         int itr = 0;
 
+        String countryFallback = sCountryFallback.get(locale.getLanguage());
         for (Locale l : sLocales) {
             if (locale.equals(l)) {
                 index = itr;
                 break;
             }
+            if (locale.getLanguage().equals(l.getLanguage()) &&
+                    (indexSec == -1 || (countryFallback != null &&
+                            countryFallback.equals(locale.getCountry())))) {
+                indexSec = itr;
+            }
             itr++;
         }
 
         if (index == -1) {
-            //TODO: change the index to the most closer available locale
-            sLogger.warn("Current device locale '" + locale.toString() +
+            // change the index to the most closer available locale
+            index = indexSec;
+        }
+
+        if (index == -1) {
+            sLogger.warn("Current device locale '" + locale +
                     "' does not appear in your given supported locales");
 
             index = sDetector.detectMostClosestLocale(locale);
@@ -186,7 +206,22 @@ final class LocalesUtils {
      * @return the locale at the given index
      */
     static Locale getLocaleFromIndex(int index) {
-        return LocalesUtils.sLocales.toArray(new Locale[0])[index];
+        if (sLocalesArray == null) return Locale.US;
+        return sLocalesArray[index];
+    }
+
+    /**
+     * @return the index of the given locale
+     */
+    static int getIndexOfLocale(Locale locale) {
+        if (sLocalesArray == null || locale == null) {
+            return Locale.US.equals(locale) ? 0 : -1;
+        }
+        for (int i = 0; i < sLocalesArray.length; i++) {
+            if (sLocalesArray[i].equals(locale))
+                return i;
+        }
+        return -1;
     }
 
     /**
@@ -379,5 +414,13 @@ final class LocalesUtils {
         return i == -1 || i + 1 == locale.length() ? new Locale(locale) :
                 new Locale(locale.substring(0, i), locale.substring(
                         i + (locale.charAt(i + 1) == 'r' ? 2 : 1)));
+    }
+
+    /**
+     * @param locale the locale
+     * @return the country fallback for the provided locale
+     */
+    static String getCountryFallback(Locale locale) {
+        return sCountryFallback.get(locale.getLanguage());
     }
 }

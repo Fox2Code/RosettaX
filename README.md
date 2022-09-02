@@ -10,6 +10,8 @@ Apply language on startup with `androidx.startup:startup-runtime`
 
 Smart Material support (only use `com.google.android.material:material` if imported)
 
+Use system translations for UI when possible.
+
 ## Add to Gradle
 
 Add jitpack, example to add to `settings.gradle`:
@@ -35,6 +37,6 @@ repositories {
 
 
 dependencies {
-    implementation 'com.github.Fox2Code:RosettaX:1.0.8'
+    implementation 'com.github.Fox2Code:RosettaX:1.0.9'
 }
 ```

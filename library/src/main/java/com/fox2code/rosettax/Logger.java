@@ -7,7 +7,7 @@ import android.util.Log;
  * Created by ahmedjazzar on 1/16/16.
  */
 
-class Logger {
+final class Logger {
 
     private final String mTag;
 

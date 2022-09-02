@@ -5,10 +5,15 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
+import androidx.annotation.StringRes;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * This class detects the application available locales inside the resources based on a string id,
@@ -17,7 +22,7 @@ import java.util.Locale;
  *
  * Created by ahmedjazzar on 1/16/16.
  */
-class LocalesDetector {
+final class LocalesDetector {
     private static final String TAG = LocalesDetector.class.getName();
 
     private final Context mContext;
@@ -37,7 +42,7 @@ class LocalesDetector {
      * @param stringId experimental string id to discover locales
      * @return the discovered locales
      */
-    HashSet<Locale> fetchAvailableLocales(int stringId) {
+    HashSet<Locale> fetchAvailableLocales(@StringRes int stringId) {
 
         DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
         Configuration conf = mContext.getResources().getConfiguration();
@@ -93,7 +98,6 @@ class LocalesDetector {
 
     /**
      * TODO: what if a user didn't provide a closer email at all?
-     * TODO: check the closest locale not the first identified
      *
      * This method should provide a locale that is close to the given one in the parameter, it's
      * currently checking the language only if in case the detector detects the string in other
@@ -106,18 +110,55 @@ class LocalesDetector {
 
         mLogger.debug("Start detecting a close locale to: ");
 
-        int index = 0;
+        int index = -1;
+        int precision = 0;
+        Locale localeClosest = null;
+        int indexLocaleClosest = -1;
+        String countryFallback = LocalesUtils.getCountryFallback(locale);
         for (Locale loc: LocalesUtils.getLocales()) {
-            if(loc.getDisplayLanguage().equals(locale.getDisplayLanguage()))    {
-                mLogger.info("The locale: '" + loc + "' has been detected as a closer locale to: '"
-                        + locale + "'");
-                return index;
-            }
             index++;
+            if (loc.equals(locale)) {
+                localeClosest = loc;
+                indexLocaleClosest = index;
+                precision = 3;
+                break; // Break
+            }
+            if (loc.getDisplayLanguage().equals(locale.getDisplayLanguage()) &&
+                    (countryFallback != null && countryFallback.equals(locale.getCountry()))) {
+                localeClosest = loc;
+                indexLocaleClosest = index;
+                precision = 2;
+                continue;
+            }
+            if (precision >= 2) continue;
+            if (loc.getDisplayLanguage().equals(locale.getDisplayLanguage())) {
+                localeClosest = loc;
+                indexLocaleClosest = index;
+                precision = 1;
+                continue;
+            }
+            if (precision >= 1) continue;
+            if (locale.getLanguage().equals(loc.getLanguage()) &&
+                    (indexLocaleClosest == -1 || (countryFallback != null &&
+                            countryFallback.equals(locale.getCountry())))) {
+                localeClosest = loc;
+                indexLocaleClosest = index;
+            }
         }
 
-        mLogger.debug("No closer locales founded.");
-        return -1;
+        if (localeClosest != null && indexLocaleClosest != -1) {
+            if (precision == 3) {
+                mLogger.info("The locale: '" + localeClosest +
+                        "' has been detected as the same locale to: '" + locale + "'");
+            } else {
+                mLogger.info("The locale: '" + localeClosest +
+                        "' has been detected as a closer locale to: '" + locale + "'");
+            }
+            return indexLocaleClosest;
+        } else {
+            mLogger.debug("No closer locales found.");
+            return -1;
+        }
     }
 
     /**
@@ -126,9 +167,13 @@ class LocalesDetector {
      * @param locales to be checked
      * @return valid locales
      */
-    HashSet<Locale> validateLocales(HashSet<Locale> locales)   {
+    LinkedHashSet<Locale> validateLocales(Collection<Locale> locales) {
 
         mLogger.debug("Validating given locales..");
+
+        if (!(locales instanceof Set)) {
+            locales = new LinkedHashSet<>(locales);
+        }
 
         for (Locale l:LocalesUtils.getPseudoLocales()) {
             if(locales.remove(l)) {
@@ -136,7 +181,7 @@ class LocalesDetector {
             }
         }
 
-        HashSet<Locale> cleanLocales = new HashSet<>();
+        LinkedHashSet<Locale> cleanLocales = new LinkedHashSet<>();
         Locale[] androidLocales = Locale.getAvailableLocales();
         for (Locale locale: locales) {
             if (Arrays.asList(androidLocales).contains(locale)) {
