@@ -12,6 +12,10 @@ Smart Material support (only use `com.google.android.material:material` if impor
 
 Use system translations for UI when possible.
 
+## Requirements
+
+- Android 6.0 (API level 23)
+
 ## Add to Gradle
 
 Add jitpack, example to add to `settings.gradle`:
