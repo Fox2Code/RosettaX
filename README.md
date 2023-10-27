@@ -1,6 +1,6 @@
 # RosettaX
 
-A fork of [rosetta](https://github.com/ahmedaljazzar/rosetta) language selector with AndroidX and Material support
+A fork of [ahmedaljazzar/rosetta](https://github.com/ahmedaljazzar/rosetta) language selector with AndroidX and Material support
 
 Fork originally created by [@DerGoogler](https://github.com/DerGoogler) for [FoxMMM](https://github.com/Fox2Code/FoxMagiskModuleManager)
 
