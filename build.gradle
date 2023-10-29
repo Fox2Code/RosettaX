@@ -4,11 +4,11 @@ plugins {
     id 'com.android.library' version '7.3.0-rc01' apply false
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 
 // Required to make JitPack work?!
-task publishToMavenLocal(type: Task) {
+tasks.register('publishToMavenLocal', Task) {
     dependsOn(":library:publishToMavenLocal")
 }
