@@ -14,7 +14,7 @@ Use system translations for UI when possible.
 
 ## Requirements
 
-- Android 6.0 (API level 23)
+- Android 5.0 (API level 21)
 
 ## Add to Gradle
 
